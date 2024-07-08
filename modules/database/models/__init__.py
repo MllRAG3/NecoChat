@@ -4,8 +4,10 @@ from .users import Users
 
 models: list = [
     Users,
+
     Chats,
     ChatUsers,
+
     MutedUsers,
     KickedUsers,
 ]
