@@ -1,7 +1,8 @@
 from modules.processes.BaseHandler import BaseHandler
 from pyrogram import handlers, filters, types
 
-from modules.util import get_or_create_user
+from modules.util import UserManager
+from modules.filters import command_is_reply, user_is_op, user_is_admin, chat_is_group
 
 
 class KillProcess(BaseHandler):
@@ -10,21 +11,14 @@ class KillProcess(BaseHandler):
     FILTER = filters.command("kill")
 
     async def func(self, _, message: types.Message):
-        if not message.reply_to_message:
-            await message.reply("Команда должна быть использована реплаем!")
-            return
-        if not get_or_create_user(message).has_admin_rights:
-            await message.reply(
-                f"Ты не админ, иди гуляй "
-                f"({get_or_create_user(message.reply_to_message.from_user).custom_name} остается жив)"
-            )
-            return
-        if not (message.chat.type.GROUP or message.chat.type.SUPERGROUP):
-            await message.reply("Шалун, эта команда только для группы или супергруппы")
+        if not await command_is_reply(message): return
+        if await user_is_op(message, user=message.reply_to_message.from_user): return
+        if not await user_is_admin(message): return
+        if not await chat_is_group(message): return
 
         await message.chat.ban_member(message.reply_to_message.from_user.id)
         await message.reply(
-            f"{get_or_create_user(message).custom_name} жестоко прикончил "
-            f"{get_or_create_user(message.reply_to_message.from_user)}"
+            f"{UserManager(message.from_user).from_database.custom_name} жестоко прикончил "
+            f"{UserManager(message.reply_to_message.from_user).from_database.custom_name}"
             f"\n\nБольше в этом чате вы его не увидите.."
         )

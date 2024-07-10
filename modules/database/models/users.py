@@ -6,5 +6,4 @@ class Users(BaseModel):
     id_in_telegram = IntegerField()
     custom_name = CharField()
 
-    has_admin_rights = BooleanField()
-    admin_rights_lvl = IntegerField(default=1)
+    admin_rights_lvl = IntegerField()
