@@ -42,16 +42,18 @@ class UserManager:
     async def current_permissions(self) -> str:
         member: ChatMember = await Il.get_chat_member(self.chat.id, self.user.id)
         permissions = member.permissions
-        return json.dumps({
-            "can_send_messages": permissions.can_send_messages,
-            "can_send_media_messages": permissions.can_send_media_messages,
-            "can_send_other_messages": permissions.can_send_other_messages,
-            "can_send_polls": permissions.can_send_polls,
-            "can_add_web_page_previews": permissions.can_add_web_page_previews,
-            "can_change_info": permissions.can_change_info,
-            "can_invite_users": permissions.can_invite_users,
-            "can_pin_messages": permissions.can_pin_messages,
-        })
+
+        keys = [
+            "can_send_messages", "can_send_media_messages", "can_send_other_messages", "can_send_polls",
+            "can_add_web_page_previews", "can_change_info", "can_invite_users", "can_pin_messages"
+        ]
+        data = [
+            permissions.can_send_messages, permissions.can_send_media_messages, permissions.can_send_other_messages,
+            permissions.can_send_polls, permissions.can_add_web_page_previews, permissions.can_change_info,
+            permissions.can_invite_users, permissions.can_pin_messages,
+        ] if permissions else [True if member.status.OWNER else False for _ in range(len(keys))]
+
+        return json.dumps(dict(zip(keys, data)))
 
     @staticmethod
     def save(new):
