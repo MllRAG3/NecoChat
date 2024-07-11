@@ -3,7 +3,6 @@ import datetime
 from modules.database.models import models, Users, Chats, ChatUsers
 from modules.database import db
 from modules.config import OP_USERS
-from modules.bot import Il
 
 from peewee import DoesNotExist
 from pyrogram.types import User, Chat
