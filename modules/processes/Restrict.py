@@ -1,7 +1,7 @@
 from modules.processes.BaseHandler import BaseHandler
 from pyrogram import handlers, filters, types
 
-from modules.util import UserManager, extract_arguments, safe_to_datetime
+from modules.util import get_user_from_db, extract_arguments, safe_to_datetime
 from modules.filters import command_is_reply, user_is_op, user_is_admin, chat_is_group
 
 
@@ -16,10 +16,12 @@ class KillProcess(BaseHandler):
         if not await user_is_admin(message): return
         if not await chat_is_group(message): return
 
+        reply_db_user = await get_user_from_db(message=message, user=message.reply_to_message.from_user)
+        non_reply_db_user = await get_user_from_db(message=message)
+
         await message.chat.ban_member(message.reply_to_message.from_user.id)
         await message.reply(
-            f"{UserManager(message.from_user, message.chat).from_database.custom_name} жестоко прикончил "
-            f"{UserManager(message.reply_to_message.from_user, message.chat).from_database.custom_name}"
+            f"{non_reply_db_user.custom_name} жестоко прикончил {reply_db_user.custom_name}"
             f"\n\nБольше в этом чате вы его не увидите.."
         )
 
@@ -46,15 +48,14 @@ class ShutUpProcess(BaseHandler):
             )
             return
 
+        reply_db_user = await get_user_from_db(message=message, user=message.reply_to_message.from_user)
+
         await message.chat.restrict_member(
             message.reply_to_message.from_user.id,
             types.ChatPermissions(),
             until_date=until_date
         )
-        await message.reply(
-            f"Пользователь {UserManager(message.reply_to_message.from_user, message.chat).from_database.custom_name} "
-            f"лишен права голоса до {until_date}!"
-        )
+        await message.reply(f"Пользователь {reply_db_user.custom_name} лишен права голоса до {until_date}!")
 
 
 class UnmuteProcess(BaseHandler):
@@ -67,11 +68,11 @@ class UnmuteProcess(BaseHandler):
         if not await user_is_admin(message): return
         if not await chat_is_group(message): return
 
-        user: UserManager = UserManager(message.reply_to_message.from_user, message.chat)
+        reply_db_user = await get_user_from_db(message=message, user=message.reply_to_message.from_user)
 
         await message.chat.restrict_member(
             message.reply_to_message.from_user.id,
             types.ChatPermissions(**user.default_permissions)
         )
 
-        await message.reply(f"Пользователь {user.from_database.custom_name} освобожден досрочно!")
+        await message.reply(f"Пользователь {reply_db_user.custom_name} освобожден досрочно!")

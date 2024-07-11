@@ -1,13 +1,29 @@
-import datetime
-
-from modules.database.models import models, Users, Chats, ChatUsers
+from modules.database.models import models, Users
 from modules.database import db
-from modules.config import OP_USERS
+from modules.errors import LowArgs
+from modules.managers import UserManager
 
 from peewee import DoesNotExist
-from pyrogram.types import User, Chat
-
+from datetime import datetime
+from pyrogram.types import User, Chat, Message
 import re
+
+
+async def get_user_from_db(
+        *,
+        message: Message | None = None,
+        user: User | None = None, chat: Chat | None = None
+) -> Users:
+    if not message and (not chat or not user): raise LowArgs("Необходимо указать или message или user и chat")
+    if chat is None: chat = message.chat
+    if user is None: user = message.from_user
+
+    user_manag = UserManager(user, chat)
+    try:
+        return user_manag.from_database
+    except DoesNotExist:
+        db_create_r = await user_manag.create_database_user()
+        return db_create_r[0]
 
 
 def create_tables() -> None:
@@ -18,65 +34,6 @@ def create_tables() -> None:
     with db:
         db.create_tables(models)
     print(f"created models: {', '.join(map(lambda x: x.__name__, models))}")
-
-
-class ChatManager:
-    def __init__(self, chat: Chat):
-        self.chat: Chat = chat
-
-    @property
-    def from_database(self) -> Chats:
-        try:
-            return Chats.get(id_in_telegram=self.chat.id)
-        except DoesNotExist:
-            data = {
-                "id_in_telegram": self.chat.id,
-                "custom_title": self.chat.title,
-            }
-            return Chats.create(**data)
-
-
-class UserManager:
-    def __init__(self, user: User, chat: Chat):
-        self.user: User = user
-        self.chat: Chat = chat
-
-    @property
-    def from_database(self) -> Users:
-        try:
-            return Users.get(id_in_telegram=self.user.id)
-        except DoesNotExist:
-            data = {
-                "id_in_telegram": self.user.id,
-                "custom_name": self.user.first_name,
-                "admin_rights_lvl": int(self.user.id in OP_USERS)
-            }
-            db_user = Users.create(**data)
-            data = {
-                "chat": ChatManager(self.chat).from_database,
-                "member": self.from_database
-            }
-            ChatUsers.create(**data)
-
-            return db_user
-
-    @property
-    def default_permissions(self) -> dict[str, bool]:
-        db_user = self.from_database
-        return {
-            "can_send_messages": db_user.can_send_messages,
-            "can_send_media_messages": db_user.can_send_media_messages,
-            "can_send_other_messages": db_user.can_send_other_messages,
-            "can_send_polls": db_user.can_send_polls,
-            "can_add_web_page_previews": db_user.can_add_web_page_previews,
-            "can_change_info": db_user.can_change_info,
-            "can_invite_users": db_user.can_invite_users,
-            "can_pin_messages": db_user.can_pin_messages,
-        }
-
-    @staticmethod
-    def save(new):
-        Users.save(new)
 
 
 def is_command(text: str) -> bool:
@@ -97,11 +54,8 @@ def safe_to_int(value: str):
         return None
 
 
-def safe_to_datetime(value: str, f: str = "%d/%m/%Y %H:%M") -> datetime.datetime | None:
+def safe_to_datetime(value: str, f: str = "%d/%m/%Y %H:%M") -> datetime | None:
     try:
-        return datetime.datetime.strptime(value, f)
+        return datetime.strptime(value, f)
     except ValueError:
         return None
-
-
-zero_datetime = datetime.datetime(day=1, month=1, year=1, hour=0, minute=0, second=0, microsecond=0)

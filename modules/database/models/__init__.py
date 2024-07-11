@@ -1,9 +1,9 @@
-from .chats import Chats, ChatUsers
+from .chats import Chats, ChatMembers
 from .users import Users
 
 models: list = [
     Users,
 
     Chats,
-    ChatUsers,
+    ChatMembers,
 ]
