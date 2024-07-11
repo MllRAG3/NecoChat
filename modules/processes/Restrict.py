@@ -4,6 +4,8 @@ from pyrogram import handlers, filters, types
 from modules.util import get_user_from_db, extract_arguments, safe_to_datetime
 from modules.filters import command_is_reply, user_is_op, user_is_admin, chat_is_group
 
+import json
+
 
 class KillProcess(BaseHandler):
     __name__ = "Обработчик команды /kill"
@@ -21,7 +23,7 @@ class KillProcess(BaseHandler):
 
         await message.chat.ban_member(message.reply_to_message.from_user.id)
         await message.reply(
-            f"{non_reply_db_user.custom_name} жестоко прикончил {reply_db_user.custom_name}"
+            f"{non_reply_db_user[0].custom_name} жестоко прикончил {reply_db_user[0].custom_name}"
             f"\n\nБольше в этом чате вы его не увидите.."
         )
 
@@ -55,7 +57,7 @@ class ShutUpProcess(BaseHandler):
             types.ChatPermissions(),
             until_date=until_date
         )
-        await message.reply(f"Пользователь {reply_db_user.custom_name} лишен права голоса до {until_date}!")
+        await message.reply(f"Пользователь {reply_db_user[0].custom_name} лишен права голоса до {until_date}!")
 
 
 class UnmuteProcess(BaseHandler):
@@ -72,7 +74,7 @@ class UnmuteProcess(BaseHandler):
 
         await message.chat.restrict_member(
             message.reply_to_message.from_user.id,
-            types.ChatPermissions(**user.default_permissions)
+            types.ChatPermissions(**json.loads(reply_db_user[1].permissions_json))
         )
 
-        await message.reply(f"Пользователь {reply_db_user.custom_name} освобожден досрочно!")
+        await message.reply(f"Пользователь {reply_db_user[0].custom_name} освобожден досрочно!")

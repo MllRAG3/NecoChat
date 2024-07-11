@@ -9,7 +9,7 @@ async def user_is_op(message: types.Message, user: types.User | None = None) -> 
 
     db_user = await get_user_from_db(message=message, user=message.reply_to_message.from_user)
     await message.reply(
-        f"{db_user.custom_name} слишком ценный член этого чата, его нельзя бить и команда /{message.command[0]} "
+        f"{db_user[0].custom_name} слишком ценный член этого чата, его нельзя бить и команда /{message.command[0]} "
         f"не может быть использована на нем )"
     )
     return True

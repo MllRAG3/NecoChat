@@ -4,6 +4,7 @@ from modules.config import OP_USERS
 from modules.bot import Il
 
 from pyrogram.types import User, Chat, ChatMember
+import json
 
 
 class UserManager:
@@ -12,13 +13,14 @@ class UserManager:
         self.chat: Chat = chat
 
     @property
-    def from_database(self) -> Users:
+    def from_database(self) -> tuple[Users, ChatMembers]:
         """
         Возникают исключения:
           DoesNotExist если пользователя нет в базе данных
         :return: Запись из бд если та присутствует
         """
-        return Users.get(id_in_telegram=self.user.id)
+        user = Users.get(id_in_telegram=self.user.id)
+        return user, ChatMembers.get(member=user)
 
     async def create_database_user(self) -> tuple[Users, ChatMembers]:
         data = {
@@ -31,16 +33,16 @@ class UserManager:
         data = {
             "chat": ChatManager(self.chat).from_database,
             "member": db_user,
-            **await self.current_permissions()
+            "permissions_json": await self.current_permissions()
         }
         like_chat_member = ChatMembers.create(**data)
 
         return db_user, like_chat_member
 
-    async def current_permissions(self) -> dict[str, bool]:
+    async def current_permissions(self) -> str:
         member: ChatMember = await Il.get_chat_member(self.chat.id, self.user.id)
         permissions = member.permissions
-        return {
+        return json.dumps({
             "can_send_messages": permissions.can_send_messages,
             "can_send_media_messages": permissions.can_send_media_messages,
             "can_send_other_messages": permissions.can_send_other_messages,
@@ -49,7 +51,7 @@ class UserManager:
             "can_change_info": permissions.can_change_info,
             "can_invite_users": permissions.can_invite_users,
             "can_pin_messages": permissions.can_pin_messages,
-        }
+        })
 
     @staticmethod
     def save(new):

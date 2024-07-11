@@ -1,4 +1,4 @@
-from modules.database.models import models, Users
+from modules.database.models import models, Users, ChatMembers
 from modules.database import db
 from modules.errors import LowArgs
 from modules.managers import UserManager
@@ -13,7 +13,7 @@ async def get_user_from_db(
         *,
         message: Message | None = None,
         user: User | None = None, chat: Chat | None = None
-) -> Users:
+) -> tuple[Users, ChatMembers]:
     if not message and (not chat or not user): raise LowArgs("Необходимо указать или message или user и chat")
     if chat is None: chat = message.chat
     if user is None: user = message.from_user
@@ -23,7 +23,7 @@ async def get_user_from_db(
         return user_manag.from_database
     except DoesNotExist:
         db_create_r = await user_manag.create_database_user()
-        return db_create_r[0]
+        return db_create_r
 
 
 def create_tables() -> None:
