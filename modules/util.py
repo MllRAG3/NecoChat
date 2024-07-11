@@ -1,3 +1,5 @@
+import datetime
+
 from modules.database.models import models, Users, Chats, ChatUsers
 from modules.database import db
 from modules.config import OP_USERS
@@ -104,3 +106,13 @@ def safe_to_int(value: str):
         return int(value)
     except ValueError:
         return None
+
+
+def safe_to_datetime(value: str, f: str = "%d/%m/%Y %H:%M") -> datetime.datetime | None:
+    try:
+        return datetime.datetime.strptime(value, f)
+    except ValueError:
+        return None
+
+
+zero_datetime = datetime.datetime(day=1, month=1, year=1, hour=0, minute=0, second=0, microsecond=0)

@@ -1,7 +1,7 @@
 from modules.processes.BaseHandler import BaseHandler
 from pyrogram import handlers, filters, types
 
-from modules.util import UserManager, extract_arguments, safe_to_int
+from modules.util import UserManager, extract_arguments, safe_to_datetime, zero_datetime
 from modules.filters import command_is_reply, user_is_op, user_is_admin, chat_is_group
 
 
@@ -35,13 +35,25 @@ class ShutUpProcess(BaseHandler):
         if not await user_is_admin(message): return
         if not await chat_is_group(message): return
 
+        until_date = safe_to_datetime(extract_arguments(message.text))
+        if until_date is None:
+            await message.reply(
+                "Указан неправильный формат времени мьюта!"
+                "\n\nПравильный формат:"
+                "\n<b>день/месяц/год чч:мм</b>"
+                "\n(например 6/8/2003 10:56)"
+                "\n\nЕсли время меньше 30 сек или больше года, то срок будет выставлен на бесконечный"
+            )
+            return
+
         await message.chat.restrict_member(
             message.reply_to_message.from_user.id,
             types.ChatPermissions(),
+            until_date=until_date
         )
         await message.reply(
             f"Пользователь {UserManager(message.reply_to_message.from_user, message.chat).from_database.custom_name} "
-            f"лишен права голоса!"
+            f"лишен права голоса до {until_date}!"
         )
 
 
