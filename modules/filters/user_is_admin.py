@@ -8,6 +8,7 @@ async def user_is_admin(message: types.Message, user: types.User | None = None, 
 
     await message.reply(
         f"Ты не админ, иди гуляй "
-        f"({UserManager(message.reply_to_message.from_user).from_database.custom_name} остается при своем положении)"
+        f"({UserManager(message.reply_to_message.from_user, message.chat).from_database.custom_name} остается при "
+        f"своем положении)"
     )
     return False
