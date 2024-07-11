@@ -7,3 +7,7 @@ OP_USERS: Final[list[int]] = [
     CREATOR_ID,
     BOT_ID,
 ]
+
+INTERACTIVE: Final[dict[str, str | list[str]]] = {
+    "погладить": "{} погладил(а) {}",
+}

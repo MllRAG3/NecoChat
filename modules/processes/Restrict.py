@@ -1,7 +1,7 @@
 from modules.processes.BaseHandler import BaseHandler
 from pyrogram import handlers, filters, types
 
-from modules.util import UserManager, extract_arguments, safe_to_datetime, zero_datetime
+from modules.util import UserManager, extract_arguments, safe_to_datetime
 from modules.filters import command_is_reply, user_is_op, user_is_admin, chat_is_group
 
 
