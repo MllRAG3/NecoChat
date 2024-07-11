@@ -35,13 +35,6 @@ class ChatManager:
             }
             return Chats.create(**data)
 
-    # async def users(self):
-    #     chat = self.from_database
-    #     return list(map(
-    #         lambda x: UserManager(await Il.get_users(x.member.id_in_telegram), await Il.get_chat(x.chat.id_in_telegram)),
-    #         ChatUsers.select().where(ChatUsers.chat == chat)
-    #     ))
-
 
 class UserManager:
     def __init__(self, user: User, chat: Chat):
@@ -67,13 +60,6 @@ class UserManager:
 
             return db_user
 
-    # async def chats_in(self) -> list[ChatManager]:
-    #     member = self.from_database
-    #     return list(map(
-    #         lambda x: ChatManager(await Il.get_chat(x.chat.id_in_telegram)),
-    #         ChatUsers.select().where(ChatUsers.member == member)
-    #     ))
-
     @property
     def default_permissions(self) -> dict[str, bool]:
         db_user = self.from_database
@@ -87,6 +73,10 @@ class UserManager:
             "can_invite_users": db_user.can_invite_users,
             "can_pin_messages": db_user.can_pin_messages,
         }
+
+    @staticmethod
+    def save(new):
+        Users.save(new)
 
 
 def is_command(text: str) -> bool:
