@@ -1,5 +1,4 @@
 from .chats import Chats, ChatUsers
-from .restrict_process import MutedUsers, KickedUsers
 from .users import Users
 
 models: list = [
@@ -7,7 +6,4 @@ models: list = [
 
     Chats,
     ChatUsers,
-
-    MutedUsers,
-    KickedUsers,
 ]
