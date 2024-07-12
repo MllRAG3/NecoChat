@@ -1,9 +1,7 @@
 from modules.database.models.BaseModel import BaseModel
-from peewee import IntegerField, BooleanField, CharField
+from peewee import IntegerField
 
 
 class Users(BaseModel):
     id_in_telegram = IntegerField()
-    custom_name = CharField()
-
-    admin_rights_lvl = IntegerField()
+    dialogue_id = IntegerField()  # Для рассылок
