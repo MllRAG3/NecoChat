@@ -1,8 +1,9 @@
 from modules.processes.BaseHandler import BaseHandler
 from pyrogram import handlers, filters, types
 
-from modules.util import get_user_from_db, extract_arguments, safe_to_datetime
+from modules.util import extract_arguments, safe_to_datetime
 from modules.filters import command_is_reply, user_is_op, user_is_admin, chat_is_group
+from modules.database import GetOrCreate
 
 import json
 
@@ -18,12 +19,12 @@ class KillProcess(BaseHandler):
         if not await user_is_admin(message): return
         if not await chat_is_group(message): return
 
-        reply_db_user = await get_user_from_db(message=message, user=message.reply_to_message.from_user)
-        non_reply_db_user = await get_user_from_db(message=message)
+        reply_member = await GetOrCreate(message=message, user=message.reply_to_message.from_user).chat_member()
+        cmd_member = await GetOrCreate(message=message).chat_member()
 
         await message.chat.ban_member(message.reply_to_message.from_user.id)
         await message.reply(
-            f"{non_reply_db_user[0].custom_name} жестоко прикончил {reply_db_user[0].custom_name}"
+            f"{cmd_member.config.custom_name} жестоко прикончил {reply_member.config.custom_name}"
             f"\n\nБольше в этом чате вы его не увидите.."
         )
 
@@ -50,14 +51,14 @@ class ShutUpProcess(BaseHandler):
             )
             return
 
-        reply_db_user = await get_user_from_db(message=message, user=message.reply_to_message.from_user)
+        reply_member = await GetOrCreate(message=message, user=message.reply_to_message.from_user).chat_member()
 
         await message.chat.restrict_member(
             message.reply_to_message.from_user.id,
             types.ChatPermissions(),
             until_date=until_date
         )
-        await message.reply(f"Пользователь {reply_db_user[0].custom_name} лишен права голоса до {until_date}!")
+        await message.reply(f"Пользователь {reply_member.config.custom_name} лишен права голоса до {until_date}!")
 
 
 class UnmuteProcess(BaseHandler):
@@ -70,11 +71,11 @@ class UnmuteProcess(BaseHandler):
         if not await user_is_admin(message): return
         if not await chat_is_group(message): return
 
-        reply_db_user = await get_user_from_db(message=message, user=message.reply_to_message.from_user)
+        reply_member = await GetOrCreate(message=message, user=message.reply_to_message.from_user).chat_member()
 
         await message.chat.restrict_member(
             message.reply_to_message.from_user.id,
-            types.ChatPermissions(**json.loads(reply_db_user[1].permissions_json))
+            types.ChatPermissions(**json.loads(reply_member.config.permissions_json))
         )
 
-        await message.reply(f"Пользователь {reply_db_user[0].custom_name} освобожден досрочно!")
+        await message.reply(f"Пользователь {reply_member.config.custom_name} освобожден досрочно!")

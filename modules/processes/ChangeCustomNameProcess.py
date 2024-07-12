@@ -1,19 +1,19 @@
 from modules.processes.BaseHandler import BaseHandler
 from pyrogram import handlers, filters, types
 
-from modules.database.models import Users
-from modules.util import get_user_from_db, extract_arguments
+from modules.database import GetOrCreate, models
+from modules.util import extract_arguments
 
 
 class ChangeCustomNameProcess(BaseHandler):
-    __name__ = "обработчик команды /ChangeName"
+    __name__ = "обработчик команды /change_my_name"
     HANDLER = handlers.MessageHandler
-    FILTER = filters.command("ChangeName")
+    FILTER = filters.command("change_my_name")
 
     async def func(self, _, message: types.Message):
-        db_user = await get_user_from_db(message=message)
-        old_name, new_name = db_user[0].custom_name, extract_arguments(message.text)
-        db_user[0].custom_name = new_name
-        Users.save(db_user[0])
+        member = await GetOrCreate(message=message).chat_member()
+        old_name, new_name = member.config.custom_name, extract_arguments(message.text)
+        member.config.custom_name = new_name
+        models.ChatMemberSettings.save(member.config)
 
         await message.reply(f"{old_name} теперь {new_name}, выпьем же! )")

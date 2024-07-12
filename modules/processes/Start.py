@@ -1,14 +1,13 @@
-from . import BaseHandler as B
+from modules.processes.BaseHandler import BaseHandler
 from pyrogram import handlers, filters, types
+from modules.database import GetOrCreate
 
-from modules.util import get_user_from_db
 
-
-class StartProcess(B.BaseHandler):
+class StartProcess(BaseHandler):
     __name__ = "Обработчик команды /start"
     HANDLER = handlers.MessageHandler
     FILTER = filters.command("start")
 
     async def func(self, _, message: types.Message):
-        db_user = await get_user_from_db(message=message)
-        await message.reply(f"Привет, <b>{db_user[0].custom_name}</b>!")
+        member = await GetOrCreate(message=message).chat_member()
+        await message.reply(f"Привет, <b>{member.config.custom_name}</b>!")

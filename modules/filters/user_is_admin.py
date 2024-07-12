@@ -3,7 +3,7 @@ from modules.database import GetOrCreate
 
 
 async def user_is_admin(message: types.Message, req_lvl: int = 1) -> bool:
-    member = await GetOrCreate(message=message, user=message.from_user).chat_member()
+    member = await GetOrCreate(message=message).chat_member()
     if member.config.admin_rights_lvl >= req_lvl: return True
 
     reply_member = await GetOrCreate(message=message, user=message.reply_to_message.from_user).chat_member()
