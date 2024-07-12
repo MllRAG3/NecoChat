@@ -2,14 +2,14 @@ from modules.processes.BaseHandler import BaseHandler
 from pyrogram import handlers, types
 
 from modules.util import get_user_from_db
-from modules.filters import in_interactive_dict_filter
+from modules.filters import in_interactive_filter
 from modules.config import analyzer
 
 
 class InteractiveProcess(BaseHandler):
     __name__ = "Интерактивный regexp"
     HANDLER = handlers.MessageHandler
-    FILTER = in_interactive_dict_filter
+    FILTER = in_interactive_filter
 
     async def func(self, _, message: types.Message):
         text = message.text.split()

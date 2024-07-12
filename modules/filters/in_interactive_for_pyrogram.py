@@ -14,4 +14,4 @@ def iid(_, __, message: types.Message):
     return True
 
 
-in_interactive_dict_filter = filters.create(iid)
+in_interactive_filter = filters.create(iid)
