@@ -1,5 +1,5 @@
 from modules.config import OP_USERS
-from modules.database.models import ChatMembers, ChatMemberSettings, Chats, Users
+from .models import ChatMembers, ChatMemberSettings, Chats, Users
 from modules.errors import LowArgs
 from modules.util import JsonConverter
 

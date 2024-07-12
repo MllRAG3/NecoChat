@@ -4,4 +4,3 @@ from peewee import IntegerField
 
 class Users(BaseModel):
     id_in_telegram = IntegerField()
-    dialogue_id = IntegerField()  # Для рассылок

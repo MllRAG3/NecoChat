@@ -9,7 +9,7 @@ async def user_is_op(message: types.Message, user: types.User | None = None) -> 
 
     member = await GetOrCreate(message=message, user=user).chat_member()
     await message.reply(
-        f"{member.config.custom_name} слишком ценный член этого чата, его нельзя бить и команда /{message.command[0]} "
+        f"{member.config[0].custom_name} слишком ценный член этого чата, его нельзя бить и команда /{message.command[0]} "
         f"не может быть использована на нем )"
     )
     return True
