@@ -18,4 +18,3 @@ class ChatMemberSettings(BaseModel):
     permissions_json = CharField()
 
     member = ForeignKeyField(ChatMembers, backref="config")
-
