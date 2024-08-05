@@ -1,5 +1,5 @@
 from modules.processes.BaseHandler import BaseHandler
-from pyrogram import handlers, filters, types
+from pyrogram import handlers, filters, types, errors
 
 from modules.util import extract_arguments, safe_to_datetime
 from modules.filters import command_is_reply, user_is_op, user_is_admin, chat_is_group_filter
@@ -51,12 +51,18 @@ class ShutUpProcess(BaseHandler):
 
         reply_member = await GetOrCreate(message=message, user=message.reply_to_message.from_user).chat_member()
 
-        await message.chat.restrict_member(
-            message.reply_to_message.from_user.id,
-            types.ChatPermissions(),
-            until_date=until_date
-        )
-        await message.reply(f"Пользователь {reply_member.config[0].custom_name} лишен права голоса до {until_date}!")
+        try:
+            await message.chat.restrict_member(
+                message.reply_to_message.from_user.id,
+                types.ChatPermissions(),
+                until_date=until_date
+            )
+            await message.reply(f"Пользователь {reply_member.config[0].custom_name} лишен права голоса до {until_date}!")
+        except errors.UserAdminInvalid:
+            await message.reply(
+                f"Пользователь {reply_member.config[0].custom_name} не может быть замьючен!"
+                f"\nВозможно, он является администратором чата"
+            )
 
 
 class UnmuteProcess(BaseHandler):
