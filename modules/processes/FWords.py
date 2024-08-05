@@ -1,3 +1,5 @@
+import os
+
 from modules.processes.BaseHandler import BaseHandler
 from pyrogram import handlers, filters, types
 
@@ -43,3 +45,20 @@ class RemoveFWord(BaseHandler):
         ))
 
         await message.reply(f"Слово {word.capitalize()} исключено из списка запрещенных, выпьем же!")
+
+
+class FWordsList(BaseHandler):
+    __name__ = "Обработчик команды /list_of_f_words"
+    HANDLER = handlers.MessageHandler
+    FILTER = filters.command("list_of_f_words")
+
+    async def func(self, _, message: types.Message):
+        way = f"forbidden_words_chat_{message.chat.id}"
+        with open(way, "w") as f:
+            f.write('\n'.join(map(
+                lambda x: x.word,
+                ForbiddenWords.select().where(ForbiddenWords.chat == GetOrCreate(message=message).chat)
+            )))
+
+        await message.reply_document(document=open(way, "rb"), caption="Список запрещенных слов!")
+        os.remove(way)

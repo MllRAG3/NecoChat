@@ -10,4 +10,7 @@ OP_USERS: Final[list[int]] = [
 ]
 
 
+MUTE_TIME_FOR_F_WORD: Final[int] = 300  # in secs
+
+
 analyzer: Final[MorphAnalyzer] = MorphAnalyzer(lang='ru')

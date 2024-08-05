@@ -12,7 +12,6 @@ class JsonConverter:
             "<class 'ChatPermissions'>": self.convert_chat_permissions,
             "<class 'NoneType'>": self.none
         }
-
         if self.type not in ALLOWED_TYPES.keys(): raise TypeError
         return ALLOWED_TYPES[self.type]()
 
