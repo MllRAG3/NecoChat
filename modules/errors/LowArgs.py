@@ -1,0 +1,2 @@
+class LowArgs(BaseException):
+    pass
