@@ -3,6 +3,8 @@ from .StepHandler import NextStepHandler
 from .Restrict import KillProcess, ShutUpProcess, UnmuteProcess
 from .Interactive import InteractiveProcess
 from .ChangeCustomNameProcess import ChangeCustomNameProcess
+from .FWords import AddFWord, RemoveFWord, FWordsList
+from .CheckFWords import CheckFWords
 
 handlers_to_add = [
     NextStepHandler,
@@ -14,4 +16,9 @@ handlers_to_add = [
     KillProcess,
     ShutUpProcess,
     UnmuteProcess,
+
+    AddFWord,
+    RemoveFWord,
+    FWordsList,
+    CheckFWords,
 ]
