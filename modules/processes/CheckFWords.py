@@ -1,14 +1,14 @@
 from modules.processes.BaseHandler import BaseHandler
 from pyrogram import handlers, filters, types, errors
 
-from modules.config import analyzer, MUTE_TIME_FOR_F_WORD
+from modules.config import analyzer
 from modules.database import GetOrCreate
 from modules.database.models import ForbiddenWords
 
 from datetime import datetime, timedelta
 
 
-def in_f_list(_, __, message):
+def get_f_words(message) -> list[str]:
     f_words = set(map(
         lambda x: x.word,
         ForbiddenWords.select().where(ForbiddenWords.chat == GetOrCreate(message=message).chat)
@@ -18,7 +18,11 @@ def in_f_list(_, __, message):
         message.text.split()
     ))
 
-    if m_words & f_words: return True
+    return list(m_words & f_words)
+
+
+def in_f_list(_, __, message) -> bool:
+    if get_f_words(message): return True
     return False
 
 
@@ -32,7 +36,10 @@ class CheckFWords(BaseHandler):
 
     async def func(self, _, message: types.Message):
         member = await GetOrCreate(message=message).chat_member()
-        until_date = datetime.now() + timedelta(seconds=MUTE_TIME_FOR_F_WORD)
+        until_date = datetime.now() + timedelta(seconds=sum(map(
+            lambda x: ForbiddenWords.get(word=x).restrict_time,
+            get_f_words(message)
+        )))
         try:
             await message.delete()
             await message.chat.restrict_member(
@@ -42,6 +49,7 @@ class CheckFWords(BaseHandler):
             )
             await message.reply(
                 f"Пользователь {member.config[0].custom_name} лишен права голоса до {until_date} за использование "
-                f"запрещенных слов! Спосок можно посмотреть по команде /list_of_f_words")
+                f"запрещенных слов!"
+                f"\nСписок можно посмотреть по команде /list_of_f_words")
         except errors.UserAdminInvalid:
             pass
