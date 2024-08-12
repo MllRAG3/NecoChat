@@ -4,6 +4,7 @@ from pyrogram import handlers, filters, types, errors
 from modules.config import analyzer
 from modules.database import GetOrCreate
 from modules.database.models import ForbiddenWords
+from modules.filters import chat_is_group_filter
 
 from datetime import datetime, timedelta
 
@@ -32,9 +33,10 @@ filter_for_check = filters.create(in_f_list)
 class CheckFWords(BaseHandler):
     __name__ = "Проверка наличия запрещенных слов"
     HANDLER = handlers.MessageHandler
-    FILTER = filter_for_check
+    FILTER = filter_for_check & chat_is_group_filter
 
     async def func(self, _, message: types.Message):
+        await GetOrCreate(message=message).log()
         member = await GetOrCreate(message=message).chat_member()
         until_date = datetime.now() + timedelta(seconds=sum(map(
             lambda x: ForbiddenWords.get(word=x).restrict_time,

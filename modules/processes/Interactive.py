@@ -19,6 +19,7 @@ class InteractiveProcess(BaseHandler):
         text[0] = anal_version.inflect({"masc", "perf"})[0]  # + "(а)"
         text = ["{}"] + [text[0]] + ["{}"] + text[1:]
 
+        await GetOrCreate(message=message).log()
         reply_member = await GetOrCreate(message=message, user=message.reply_to_message.from_user).chat_member()
         cmd_member = await GetOrCreate(message=message).chat_member()
 

@@ -18,3 +18,7 @@ class ChatMemberSettings(BaseModel):
     permissions_json = CharField()
 
     member = ForeignKeyField(ChatMembers, backref="config")
+
+
+class Messages(BaseModel):
+    sender = ForeignKeyField(ChatMembers, backref="messages")

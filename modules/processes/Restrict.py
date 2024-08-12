@@ -14,6 +14,7 @@ class KillProcess(BaseHandler):
     FILTER = filters.command("kill") & chat_is_group_filter
 
     async def func(self, _, message: types.Message):
+        await GetOrCreate(message=message).log()
         if not await command_is_reply(message): return
         if await user_is_op(message, user=message.reply_to_message.from_user): return
         if not await user_is_admin(message): return
@@ -34,6 +35,7 @@ class ShutUpProcess(BaseHandler):
     FILTER = filters.command('shutup') & chat_is_group_filter
 
     async def func(self, _, message: types.Message):
+        await GetOrCreate(message=message).log()
         if not await command_is_reply(message): return
         if await user_is_op(message, user=message.reply_to_message.from_user): return
         if not await user_is_admin(message): return
@@ -71,6 +73,7 @@ class UnmuteProcess(BaseHandler):
     FILTER = filters.command('unmute') & chat_is_group_filter
 
     async def func(self, _, message: types.Message):
+        await GetOrCreate(message=message).log()
         if not await command_is_reply(message): return
         if not await user_is_admin(message): return
 
