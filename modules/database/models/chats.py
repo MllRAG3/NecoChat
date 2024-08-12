@@ -21,5 +21,4 @@ class ChatMemberSettings(BaseModel):
 
 
 class Messages(BaseModel):
-    chat = ForeignKeyField(Chats, backref="messages")
-    member = ForeignKeyField(Users, backref="messages")
+    sender = ForeignKeyField(ChatMembers, backref="messages")

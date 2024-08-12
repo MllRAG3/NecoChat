@@ -1,5 +1,5 @@
 from modules.config import OP_USERS
-from .models import ChatMembers, ChatMemberSettings, Chats, Users
+from .models import ChatMembers, ChatMemberSettings, Chats, Users, Messages
 from modules.errors import LowArgs
 from modules.util import JsonConverter
 
@@ -40,3 +40,8 @@ class GetOrCreate:
         )
 
         return member
+
+    async def log(self):
+        Messages.create(
+            sender=await self.chat_member()
+        )

@@ -12,6 +12,7 @@ class ChangeCustomNameProcess(BaseHandler):
     FILTER = filters.command("change_my_name") & chat_is_group_filter
 
     async def func(self, _, message: types.Message):
+        await GetOrCreate(message=message).log()
         member = await GetOrCreate(message=message).chat_member()
         old_name, new_name = member.config[0].custom_name, extract_arguments(message.text)
         member.config[0].custom_name = new_name
