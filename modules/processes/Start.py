@@ -5,7 +5,7 @@ from modules.filters import chat_is_group_filter
 
 
 class StartProcess(BaseHandler):
-    __name__ = "Обработчик команды /start"
+    __name__ = "/start"
     HANDLER = handlers.MessageHandler
     FILTER = filters.command("start") & chat_is_group_filter
 

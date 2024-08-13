@@ -6,6 +6,7 @@ from .ChangeCustomNameProcess import ChangeCustomNameProcess
 from .FWords import AddFWord, RemoveFWord, FWordsList
 from .CheckFWords import CheckFWords
 from .StatsProcess import SendUserStats, FinalLog
+from .Rules import AddRule, RemoveRule, RulesList
 
 handlers_to_add = [
     NextStepHandler,
@@ -22,6 +23,10 @@ handlers_to_add = [
     RemoveFWord,
     FWordsList,
     CheckFWords,
+
+    AddRule,
+    RemoveRule,
+    RulesList,
 
     SendUserStats,
     FinalLog  # ВСЕГДА ПОСЛЕДНИЙ!!!

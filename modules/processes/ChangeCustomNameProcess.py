@@ -7,7 +7,7 @@ from modules.filters import chat_is_group_filter
 
 
 class ChangeCustomNameProcess(BaseHandler):
-    __name__ = "обработчик команды /change_my_name"
+    __name__ = "/change_my_name"
     HANDLER = handlers.MessageHandler
     FILTER = filters.command("change_my_name") & chat_is_group_filter
 

@@ -3,7 +3,7 @@ from pyrogram.handlers.handler import Handler
 
 
 class BaseHandler:
-    __name__ = "Unknown"
+    __name__ = ""
     HANDLER: Handler = Handler
     FILTER: Filter | None = None
 
