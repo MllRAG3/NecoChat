@@ -1,6 +1,6 @@
 from . import BaseHandler as B
 from pyrogram import handlers, types
-from modules.step_stuff import Step
+from modules.step import Step
 
 
 class NextStepHandler(B.BaseHandler):
