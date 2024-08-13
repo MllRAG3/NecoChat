@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 
 
 def get_f_words(message) -> list[str]:
+    if message.text is None: return []
     f_words = set(map(
         lambda x: x.word,
         ForbiddenWords.select().where(ForbiddenWords.chat == GetOrCreate(message=message).chat)
