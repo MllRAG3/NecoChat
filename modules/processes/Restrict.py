@@ -9,7 +9,7 @@ import json
 
 
 class KillProcess(BaseHandler):
-    __name__ = "Обработчик команды /kill"
+    __name__ = "/kill"
     HANDLER = handlers.MessageHandler
     FILTER = filters.command("kill") & chat_is_group_filter
 
@@ -30,7 +30,7 @@ class KillProcess(BaseHandler):
 
 
 class ShutUpProcess(BaseHandler):
-    __name__ = "Обработчик команды /shutup"
+    __name__ = "/shutup"
     HANDLER = handlers.MessageHandler
     FILTER = filters.command('shutup') & chat_is_group_filter
 
@@ -68,7 +68,7 @@ class ShutUpProcess(BaseHandler):
 
 
 class UnmuteProcess(BaseHandler):
-    __name__ = "Обработчик команды /unmute"
+    __name__ = "/unmute"
     HANDLER = handlers.MessageHandler
     FILTER = filters.command('unmute') & chat_is_group_filter
 

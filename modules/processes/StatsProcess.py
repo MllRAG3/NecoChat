@@ -15,7 +15,7 @@ class FinalLog(BaseHandler):
 
 
 class SendUserStats(BaseHandler):
-    __name__ = "Обработчик команды /me"
+    __name__ = "/me"
     HANDLER = handlers.MessageHandler
     FILTER = filters.command("me") & chat_is_group_filter
 
@@ -28,7 +28,7 @@ class SendUserStats(BaseHandler):
 
 
 class SendChatStats(BaseHandler):  # beta
-    __name__ = "Обработчик команды /chat"
+    __name__ = "/chat"
     HANDLER = handlers.MessageHandler
     FILTER = None
 

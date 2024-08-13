@@ -8,7 +8,7 @@ class Chats(BaseModel):
 
 
 class ChatRules(BaseModel):
-    name = CharField()
+    title = CharField()
     text = CharField()
 
     chat = ForeignKeyField(Chats, backref="rules")

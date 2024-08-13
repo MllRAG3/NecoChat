@@ -11,7 +11,7 @@ from modules.filters import chat_is_group_filter
 
 
 class AddFWord(BaseHandler):
-    __name__ = "Обработчик команды /add_f_word"
+    __name__ = "/add_f_word"
     HANDLER = handlers.MessageHandler
     FILTER = filters.command("add_f_word") & chat_is_group_filter
 
@@ -37,7 +37,7 @@ class AddFWord(BaseHandler):
 
 
 class RemoveFWord(BaseHandler):
-    __name__ = "Обработчик команды /remove_f_word"
+    __name__ = "/remove_f_word"
     HANDLER = handlers.MessageHandler
     FILTER = filters.command("remove_f_word") & chat_is_group_filter
 
@@ -58,7 +58,7 @@ class RemoveFWord(BaseHandler):
 
 
 class FWordsList(BaseHandler):
-    __name__ = "Обработчик команды /list_of_f_words"
+    __name__ = "/list_of_f_words"
     HANDLER = handlers.MessageHandler
     FILTER = filters.command("list_of_f_words") & chat_is_group_filter
 
