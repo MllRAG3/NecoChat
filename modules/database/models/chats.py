@@ -7,6 +7,13 @@ class Chats(BaseModel):
     id_in_telegram = IntegerField()
 
 
+class ChatRules(BaseModel):
+    name = CharField()
+    text = CharField()
+
+    chat = ForeignKeyField(Chats, backref="rules")
+
+
 class ChatMembers(BaseModel):
     chat = ForeignKeyField(Chats, backref="members")
     member = ForeignKeyField(Users, backref="chats")
