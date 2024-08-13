@@ -1,8 +1,8 @@
+import re
+from datetime import datetime
+
 from modules.database.models import models
 from modules.database import db
-
-from datetime import datetime
-import re
 
 
 def create_tables() -> None:
