@@ -24,7 +24,9 @@ class Step:
         client = await GetOrCreate(**self.client_data).chat_member()
         if not self.exist(client): return
 
-        return await ctypes.cast(NSRec.get_or_none(client=client).func_id, ctypes.py_object).value(message=message)
+        call_res = await ctypes.cast(NSRec.get(client=client).func_id, ctypes.py_object).value(message=message)
+        NSRec.delete_by_id(NSRec.get(client=client))
+        return call_res
 
     @staticmethod
     def exist(client: ChatMembers) -> bool:
