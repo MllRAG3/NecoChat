@@ -1,28 +1,35 @@
 from pyrogram import types
-from typing import Callable, Any, Final
+import ctypes
+from typing import Callable
+
+from modules.database import GetOrCreate
+from modules.database.models import NSRec, ChatMembers
 
 
 class Step:
     __name__ = "StepFilter"
-    REGISTERED: dict[int, tuple[Callable, dict[str, Any]]] = {}
 
-    def register_by_chat_id(self, chat_id: int, func: Callable, **kwargs_for_func) -> None:
-        self.REGISTERED[chat_id] = (func, kwargs_for_func)
+    def __init__(self, **client_data):
+        self.client_data = client_data
 
-    async def get_and_execute(self, msg: types.Message):
-        chat_id = msg.chat.id
+    async def register(self, func: Callable):
+        client = await GetOrCreate(**self.client_data).chat_member()
+        NSRec.create(client=client, func_id=id(func))
 
-        if not self.exist(chat_id): return
-        func_call_result = await self.REGISTERED[chat_id][0](message=msg, **self.REGISTERED[chat_id][1])
-        del self.REGISTERED[chat_id]
+    async def clear(self):
+        client = await GetOrCreate(**self.client_data).chat_member()
+        NSRec.delete().where(NSRec.client == client)
 
-        return func_call_result
+    async def get_and_execute(self, message: types.Message):
+        client = await GetOrCreate(**self.client_data).chat_member()
+        if not self.exist(client): return
 
-    def exist(self, id_: int) -> bool:
-        return self.REGISTERED.get(id_) is not None
+        return await ctypes.cast(NSRec.get_or_none(client=client).func_id, ctypes.py_object).value(message=message)
 
-    def __call__(self, _, msg: types.Message):
-        return self.exist(msg.chat.id)
+    @staticmethod
+    def exist(client: ChatMembers) -> bool:
+        return NSRec.get_or_none(client=client) is not None
 
-
-NEXT_STEP: Final[Step] = Step()  # Use ONLY this to register next sent messages:3!!!
+    async def __call__(self, _, msg: types.Message):
+        client = await GetOrCreate(message=msg).chat_member()
+        return self.exist(client)

@@ -11,12 +11,12 @@ def add_handlers() -> None:
 
 
 def run_bot() -> None:
-    # try:
-    add_handlers()
-    create_tables()
-    Il.run()
-    # except Exception as e:
-    #     print(f"Can't run bot!\nError found: {e}")
+    try:
+        add_handlers()
+        create_tables()
+        Il.run()
+    except Exception as e:
+        print(f"Can't run bot!\nError found: {e}")
 
 
 if __name__ == "__main__":
