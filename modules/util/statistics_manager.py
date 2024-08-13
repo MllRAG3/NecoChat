@@ -10,13 +10,25 @@ class StatsManager:
         self.member: ChatMembers = member
         self.now: datetime = datetime.now()
 
-    def __get_stats(self, days_period, now: datetime | None = None):
+    def __get_stats(self, days_period, now: datetime | None = None) -> list[Messages]:
+        """
+        Статистика за последнее время
+        :param days_period: период, за который будет выдана статистика
+        :param now: текущее время
+        """
         if now is None: now = self.now
         return Messages \
             .select() \
             .where(Messages.updated_at.between(now - timedelta(days=days_period), now) & Messages.sender == self.member)
 
-    def __compress_int_list(self, lst: list[int], to: int, i: int = 0):
+    def __compress_int_list(self, lst: list[int], to: int, i: int = 0) -> list[int]:
+        """
+        Сжимает список с int/float
+        :param lst: Список
+        :param to: Необходимая длина
+        :param i: Техническая переменная для рекурсии
+        :return: Сжатый список
+        """
         if len(lst) <= to: return lst
         if i + 2 > len(lst): i = 0
 
@@ -27,22 +39,37 @@ class StatsManager:
 
     @property
     def per_day(self) -> int:
+        """
+        :return: Кол-во сообщений за текущий день
+        """
         return len(self.__get_stats(1))
 
     @property
     def per_week(self) -> int:
+        """
+        :return: кол-во сообщений за текущую неделю
+        """
         return len(self.__get_stats(7))
 
     @property
     def per_month(self) -> int:
+        """
+        :return: кол-во сообщений за текущий месяц
+        """
         return len(self.__get_stats(30))
 
     @property
     def per_all(self) -> int:
+        """
+        :return: Кол-во сообщений за все время
+        """
         return len(Messages.select())
 
     @property
     def all_logs_grouped_by_days(self) -> list[int]:
+        """
+        :return: Все сообщения сгруппированные по дням
+        """
         all_logs = Messages \
             .select() \
             .where(Messages.sender == self.member) \
@@ -59,6 +86,9 @@ class StatsManager:
 
     @property
     def all_today_hours(self) -> list[int]:
+        """
+        :return: Все сообщения за сегодня сгруппированные по часам
+        """
         hrs = today_zero_hr_time = self.now - timedelta(
             hours=self.now.hour, minutes=self.now.minute, seconds=self.now.second, microseconds=self.now.microsecond
         )
@@ -78,11 +108,18 @@ class StatsManager:
 
     @property
     def de_send(self) -> dict:
+        """
+        :return: Словарь для pyrogram.Message.reply_photo(...)
+        """
         file = open(str(self.make_plt_pic(self.member.ID)), "rb")
         os.remove(file.name)
         return {"photo": file, "caption": str(self)}
 
     def make_plt_pic(self, name: str) -> str:
+        """
+        Составляет график активности
+        :param name: Имя файла
+        """
         plt.figure(figsize=(23, 20))
         plt.style.use("grayscale")
 
